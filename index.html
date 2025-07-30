@@ -163,12 +163,19 @@
       display: flex;
       gap: 8px;
       padding: 20px;
-      padding-top: 84px;
       flex-direction: column;
 
       .action-container {
         display: flex;
         gap: 8px;
+      }
+    }
+    .recieved-elections{
+      padding: 20px;
+      padding-top: 84px;
+      padding-bottom: 0px;
+      .innner-container{
+        width: 96.5%;
       }
     }
 
@@ -279,6 +286,106 @@
 <body>
 
   <h2>Corporate Action Election Submission</h2>
+  <div class=" recieved-elections">
+    <div class="outer-border innner-container">
+        <h3>Received Election</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Grouping Key</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Unallocated</th>
+              <th>HKD</th>
+              <th>Stock</th>
+              <th>HKD (entitlement)</th>
+              <th>Stock (entitlement)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>3035370002*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Mandar K</td>
+              <td>6,500,000</td>
+              <td>0</td>
+              <td>6,500,000</td>
+              <td>0</td>
+              <td>6,500,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Anshu J</td>
+              <td>26,056,000</td>
+              <td>0</td>
+              <td>26,056,000</td>
+              <td>0</td>
+              <td>26,056,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Sakthivel C</td>
+              <td>7,737,000</td>
+              <td>0</td>
+              <td>7,737,000</td>
+              <td>0</td>
+              <td>7,737,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Harshal C</td>
+              <td>311,000</td>
+              <td>0</td>
+              <td>311,000</td>
+              <td>0</td>
+              <td>311,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Abhishek R</td>
+              <td>6,517,000</td>
+              <td>0</td>
+              <td>6,517,000</td>
+              <td>0</td>
+              <td>6,517,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Mukesh Y</td>
+              <td>891,000</td>
+              <td>0</td>
+              <td>891,000</td>
+              <td>0</td>
+              <td>891,000</td>
+              <td>0</td>
+            </tr>
+            <!-- Total Row -->
+            <tr style="font-weight: bold; background-color: #f9f9f9;">
+              <td colspan="3"></td>
+              <td>46,133,000</td>
+              <td>0</td>
+              <td>46,133,000</td>
+              <td>0</td>
+              <td>46,133,000</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+  
+        </table>
+  
+      </div>
+  </div>
   <div class="main-container">
 
     <div class="action-container">
@@ -388,104 +495,6 @@
           </div>
         </form>
       </div>
-    </div>
-    <div class="outer-border">
-      <h3>Received Election</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Grouping Key</th>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Unallocated</th>
-            <th>HKD</th>
-            <th>Stock</th>
-            <th>HKD (entitlement)</th>
-            <th>Stock (entitlement)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>3035370002*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Mandar K</td>
-            <td>6,500,000</td>
-            <td>0</td>
-            <td>6,500,000</td>
-            <td>0</td>
-            <td>6,500,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Anshu J</td>
-            <td>26,056,000</td>
-            <td>0</td>
-            <td>26,056,000</td>
-            <td>0</td>
-            <td>26,056,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Sakthivel C</td>
-            <td>7,737,000</td>
-            <td>0</td>
-            <td>7,737,000</td>
-            <td>0</td>
-            <td>7,737,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Harshal C</td>
-            <td>311,000</td>
-            <td>0</td>
-            <td>311,000</td>
-            <td>0</td>
-            <td>311,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Abhishek R</td>
-            <td>6,517,000</td>
-            <td>0</td>
-            <td>6,517,000</td>
-            <td>0</td>
-            <td>6,517,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Mukesh Y</td>
-            <td>891,000</td>
-            <td>0</td>
-            <td>891,000</td>
-            <td>0</td>
-            <td>891,000</td>
-            <td>0</td>
-          </tr>
-          <!-- Total Row -->
-          <tr style="font-weight: bold; background-color: #f9f9f9;">
-            <td colspan="3"></td>
-            <td>46,133,000</td>
-            <td>0</td>
-            <td>46,133,000</td>
-            <td>0</td>
-            <td>46,133,000</td>
-            <td>0</td>
-          </tr>
-        </tbody>
-
-      </table>
-
     </div>
   </div>
 
