@@ -107,7 +107,8 @@
       }
     }
 
-    #stock-percent, #cash-percent {
+    #stock-percent,
+    #cash-percent {
       display: none;
     }
 
@@ -232,50 +233,71 @@
     const cashRate = 0.1;
     const stockRate = 0.0138;
 
-    function calculateElectionValues() {
+    function calculateElectionValues(event) {
       const election = document.querySelector('input[name="election"]:checked').value;
       const cashInput = document.querySelector('input[name="cashPercent"]');
       const stockInput = document.querySelector('input[name="stockPercent"]');
 
-      let cashShares = parseFloat(cashInput.value) || 0;
-      let stockShares = parseFloat(stockInput.value) || 0;
+      let cashPercent = 0;
+      let stockPercent = 0;
 
       if (election === 'cash') {
-        stockShares = 0;
+        cashPercent = 100;
+        stockPercent = 0;
+        cashInput.value = '';
+        stockInput.value = '';
       } else if (election === 'stock') {
-        cashShares = 0;
+        cashPercent = 0;
+        stockPercent = 100;
+        cashInput.value = '';
+        stockInput.value = '';
+      } else if (election === 'both') {
+        cashPercent = parseFloat(cashInput.value) || 0;
+        stockPercent = parseFloat(stockInput.value) || 0;
+
+        // If only one is filled, auto-calculate the other
+        if (cashInput.value && !stockInput.value) {
+          stockPercent = 10000 - cashPercent;
+          stockInput.value = stockPercent >= 0 ? stockPercent : 0;
+        } else if (!cashInput.value && stockInput.value) {
+          cashPercent = 10000 - stockPercent;
+          cashInput.value = cashPercent >= 0 ? cashPercent : 0;
+        } else if (cashInput.value && cashInput.value) {
+          if (event === 'cash') {
+            stockPercent = 10000 - cashPercent;
+            stockInput.value = stockPercent >= 0 ? stockPercent : 0;
+          } else {
+            cashPercent = 10000 - stockPercent;
+            cashInput.value = cashPercent >= 0 ? cashPercent : 0;
+          }
+        }
       }
-      console.log(election)
 
-      const totalAllocated = cashShares + stockShares;
-      console.log(totalAllocated);
-
-      let hkdAmount = cashShares * cashRate;
-      if(election === 'cash'){
-        hkdAmount = totalShares * cashRate
+      let cashShares = (totalShares * cashPercent) / 100;
+      let stockShares = (totalShares * stockPercent) / 100;
+      if (election === 'both') {
+        cashShares = cashPercent
+        stockShares = stockPercent
       }
-      console.log(hkdAmount);
-
+      const hkdAmount = cashShares * cashRate;
       const stockAmount = stockShares * stockRate;
-      console.log(stockAmount);
-      if(election === 'stock'){
-        stockAmount = totalShares * stockRate
-      }
-      const unallocated = Math.max(totalShares - totalAllocated, 0);
-      console.log(unallocated);
 
-      // Update the first row in the table
+      // Update result table: [0]=Position, [1]=Cash Sel, [2]=Stock Sel, [3]=HKD, [4]=Stock
       const tableRow = document.getElementById("calculated-table");
-      console.log(tableRow.children);
-
-      tableRow.children[1].textContent = unallocated.toLocaleString(); // Unallocated
-      tableRow.children[3].textContent = Math.round(hkdAmount).toLocaleString(); // HKD
-      tableRow.children[4].textContent = Math.round(stockAmount).toLocaleString(); // Stock
+      tableRow.children[1].textContent = Math.round(cashShares).toLocaleString();   // Cash Selection
+      tableRow.children[2].textContent = Math.round(stockShares).toLocaleString();  // Stock Selection
+      tableRow.children[3].textContent = Math.round(hkdAmount).toLocaleString();    // HKD Value
+      tableRow.children[4].textContent = Math.round(stockAmount).toLocaleString();  // Stock Value
     }
 
+
     window.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('input[name="cashPercent"]').addEventListener('input', calculateElectionValues);
-      document.querySelector('input[name="stockPercent"]').addEventListener('input', calculateElectionValues);
+      document.querySelector('input[name="cashPercent"]').addEventListener('input', (() => {
+        calculateElectionValues('cash')
+      }));
+      document.querySelector('input[name="stockPercent"]').addEventListener('input', (() => {
+        calculateElectionValues('cash')
+      }));
 
       const radios = document.querySelectorAll('input[name="election"]');
       radios.forEach(radio => {
@@ -453,11 +475,11 @@
             <span class="option-grid">
               <span id="cash-percent">
                 <label for="cashPercent" class="header-percent">Cash:</label>
-                <input type="number" name="cashPercent" min="0" max="100" step="0.01"> &nbsp;
+                <input type="number" name="cashPercent" min="0" max="10000" step="1"> &nbsp;
               </span>
               <span id="stock-percent">
                 <label for="stockPercent" class="header-percent">Stock:</label>
-                <input type="number" name="stockPercent" min="0" max="100" step="0.01"><br>
+                <input type="number" name="stockPercent" min="0" max="10000" step="1"><br>
               </span>
             </span>
             <small></small>
