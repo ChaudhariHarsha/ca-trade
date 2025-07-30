@@ -107,7 +107,7 @@
       }
     }
 
-    #stock-percent {
+    #stock-percent, #cash-percent {
       display: none;
     }
 
@@ -170,11 +170,13 @@
         gap: 8px;
       }
     }
-    .recieved-elections{
+
+    .recieved-elections {
       padding: 20px;
       padding-top: 84px;
       padding-bottom: 0px;
-      .innner-container{
+
+      .innner-container {
         width: 96.5%;
       }
     }
@@ -208,12 +210,9 @@
       if (value === "both") {
         cashPercent.style.display = "block";
         stockPercent.style.display = "block";
-      } else if (value === 'cash') {
-        cashPercent.style.display = "block";
-        stockPercent.style.display = "none";
       } else {
         cashPercent.style.display = "none";
-        stockPercent.style.display = "block";
+        stockPercent.style.display = "none";
       }
       for (const item of ['label-stock', 'label-cash', 'label-both']) {
         const lableSection = document.getElementById(item);
@@ -229,57 +228,62 @@
       if (stockPercentInput) stockPercentInput.value = '';
     }
 
-    const totalShares = 7055000;
-  const cashRate = 0.1;
-  const stockRate = 0.0138;
+    const totalShares = 10000;
+    const cashRate = 0.1;
+    const stockRate = 0.0138;
 
-  function calculateElectionValues() {
-    const election = document.querySelector('input[name="election"]:checked').value;
-    const cashInput = document.querySelector('input[name="cashPercent"]');
-    const stockInput = document.querySelector('input[name="stockPercent"]');
-    
-    let cashShares = parseFloat(cashInput.value) || 0;
-    let stockShares = parseFloat(stockInput.value) || 0;
-    
-    if (election === 'cash') {
-      stockShares = 0;
-    } else if (election === 'stock') {
-      cashShares = 0;
+    function calculateElectionValues() {
+      const election = document.querySelector('input[name="election"]:checked').value;
+      const cashInput = document.querySelector('input[name="cashPercent"]');
+      const stockInput = document.querySelector('input[name="stockPercent"]');
+
+      let cashShares = parseFloat(cashInput.value) || 0;
+      let stockShares = parseFloat(stockInput.value) || 0;
+
+      if (election === 'cash') {
+        stockShares = 0;
+      } else if (election === 'stock') {
+        cashShares = 0;
+      }
+      console.log(election)
+
+      const totalAllocated = cashShares + stockShares;
+      console.log(totalAllocated);
+
+      let hkdAmount = cashShares * cashRate;
+      if(election === 'cash'){
+        hkdAmount = totalShares * cashRate
+      }
+      console.log(hkdAmount);
+
+      const stockAmount = stockShares * stockRate;
+      console.log(stockAmount);
+      if(election === 'stock'){
+        stockAmount = totalShares * stockRate
+      }
+      const unallocated = Math.max(totalShares - totalAllocated, 0);
+      console.log(unallocated);
+
+      // Update the first row in the table
+      const tableRow = document.getElementById("calculated-table");
+      console.log(tableRow.children);
+
+      tableRow.children[1].textContent = unallocated.toLocaleString(); // Unallocated
+      tableRow.children[3].textContent = Math.round(hkdAmount).toLocaleString(); // HKD
+      tableRow.children[4].textContent = Math.round(stockAmount).toLocaleString(); // Stock
     }
-    console.log(election)
-    
-    const totalAllocated = cashShares + stockShares;
-    console.log(totalAllocated);
-    
-    const hkdAmount = cashShares * cashRate;
-    console.log(hkdAmount);
 
-    const stockAmount = stockShares * stockRate;
-    console.log(stockAmount);
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('input[name="cashPercent"]').addEventListener('input', calculateElectionValues);
+      document.querySelector('input[name="stockPercent"]').addEventListener('input', calculateElectionValues);
 
-    const unallocated = Math.max(totalShares - totalAllocated, 0);
-    console.log(unallocated);
-
-    // Update the first row in the table
-    const tableRow = document.getElementById("calculated-table");
-    console.log(tableRow.children);
-    
-    tableRow.children[1].textContent = unallocated.toLocaleString(); // Unallocated
-    tableRow.children[2].textContent = Math.round(hkdAmount).toLocaleString(); // HKD
-    tableRow.children[3].textContent = Math.round(stockAmount).toLocaleString(); // Stock
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('input[name="cashPercent"]').addEventListener('input', calculateElectionValues);
-    document.querySelector('input[name="stockPercent"]').addEventListener('input', calculateElectionValues);
-
-    const radios = document.querySelectorAll('input[name="election"]');
-    radios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        calculateElectionValues(); // recalculate
+      const radios = document.querySelectorAll('input[name="election"]');
+      radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          calculateElectionValues(); // recalculate
+        });
       });
     });
-  });
   </script>
 </head>
 
@@ -288,103 +292,103 @@
   <h2>Corporate Action Election Submission</h2>
   <div class=" recieved-elections">
     <div class="outer-border innner-container">
-        <h3>Received Election</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Grouping Key</th>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Unallocated</th>
-              <th>HKD</th>
-              <th>Stock</th>
-              <th>HKD (entitlement)</th>
-              <th>Stock (entitlement)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>3035370002*BNPHK</td>
-              <td>SBL_Borrow</td>
-              <td>Mandar K</td>
-              <td>6,500,000</td>
-              <td>0</td>
-              <td>6,500,000</td>
-              <td>0</td>
-              <td>6,500,000</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>3035370003*BNPHK</td>
-              <td>SBL_Borrow</td>
-              <td>Anshu J</td>
-              <td>26,056,000</td>
-              <td>0</td>
-              <td>26,056,000</td>
-              <td>0</td>
-              <td>26,056,000</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>3035370003*BNPHK</td>
-              <td>SBL_Borrow</td>
-              <td>Sakthivel C</td>
-              <td>7,737,000</td>
-              <td>0</td>
-              <td>7,737,000</td>
-              <td>0</td>
-              <td>7,737,000</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>3035370003*BNPHK</td>
-              <td>SBL_Borrow</td>
-              <td>Harshal C</td>
-              <td>311,000</td>
-              <td>0</td>
-              <td>311,000</td>
-              <td>0</td>
-              <td>311,000</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>3035370003*BNPHK</td>
-              <td>SBL_Borrow</td>
-              <td>Abhishek R</td>
-              <td>6,517,000</td>
-              <td>0</td>
-              <td>6,517,000</td>
-              <td>0</td>
-              <td>6,517,000</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>3035370003*BNPHK</td>
-              <td>SBL_Borrow</td>
-              <td>Mukesh Y</td>
-              <td>891,000</td>
-              <td>0</td>
-              <td>891,000</td>
-              <td>0</td>
-              <td>891,000</td>
-              <td>0</td>
-            </tr>
-            <!-- Total Row -->
-            <tr style="font-weight: bold; background-color: #f9f9f9;">
-              <td colspan="3"></td>
-              <td>46,133,000</td>
-              <td>0</td>
-              <td>46,133,000</td>
-              <td>0</td>
-              <td>46,133,000</td>
-              <td>0</td>
-            </tr>
-          </tbody>
-  
-        </table>
-  
-      </div>
+      <h3>Received Election</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Grouping Key</th>
+            <th>Type</th>
+            <th>Client Name</th>
+            <th>Position</th>
+            <th>Unallocated</th>
+            <th>HKD</th>
+            <th>Stock</th>
+            <th>HKD (entitlement)</th>
+            <th>Stock (entitlement)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>3035370002*BNPHK</td>
+            <td>SBL_Borrow</td>
+            <td>Mandar K</td>
+            <td>6,500,000</td>
+            <td>0</td>
+            <td>6,500,000</td>
+            <td>0</td>
+            <td>6,500,000</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>3035370003*BNPHK</td>
+            <td>SBL_Borrow</td>
+            <td>Anshu J</td>
+            <td>26,056,000</td>
+            <td>0</td>
+            <td>26,056,000</td>
+            <td>0</td>
+            <td>26,056,000</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>3035370003*BNPHK</td>
+            <td>SBL_Borrow</td>
+            <td>Sakthivel C</td>
+            <td>7,737,000</td>
+            <td>0</td>
+            <td>7,737,000</td>
+            <td>0</td>
+            <td>7,737,000</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>3035370003*BNPHK</td>
+            <td>SBL_Borrow</td>
+            <td>Harshal C</td>
+            <td>311,000</td>
+            <td>0</td>
+            <td>311,000</td>
+            <td>0</td>
+            <td>311,000</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>3035370003*BNPHK</td>
+            <td>SBL_Borrow</td>
+            <td>Abhishek R</td>
+            <td>6,517,000</td>
+            <td>0</td>
+            <td>6,517,000</td>
+            <td>0</td>
+            <td>6,517,000</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>3035370003*BNPHK</td>
+            <td>SBL_Borrow</td>
+            <td>Mukesh Y</td>
+            <td>891,000</td>
+            <td>0</td>
+            <td>891,000</td>
+            <td>0</td>
+            <td>891,000</td>
+            <td>0</td>
+          </tr>
+          <!-- Total Row -->
+          <tr style="font-weight: bold; background-color: #f9f9f9;">
+            <td colspan="3"></td>
+            <td>46,133,000</td>
+            <td>0</td>
+            <td>46,133,000</td>
+            <td>0</td>
+            <td>46,133,000</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
   </div>
   <div class="main-container">
 
@@ -417,24 +421,16 @@
             <td>2025-07-30</td>
           </tr>
           <tr>
+            <th>Custody Deadline</th>
+            <td>2025-07-15 4:00 PM Hong Kong Time</td>
+          </tr>
+          <tr>
             <th>Reinv Price</th>
             <td>HKD 7.35</td>
           </tr>
           <tr>
-            <th>Custody Deadline</th>
-            <td>15/07/2025 4:00 PM Hong Kong Time</td>
-          </tr>
-          <tr>
-            <th>Declared Cash Rate</th>
-            <td>HKD 0.1112</td>
-          </tr>
-          <tr>
-            <th>Position Type</th>
-            <td>SBL_Borrow</td>
-          </tr>
-          <tr>
-            <th>Your Position</th>
-            <td>TIMBER HILL (EUROPE) AG - 7,055,000 shares</td>
+            <th>Market Price</th>
+            <td>HKD 7</td>
           </tr>
         </table>
       </div>
@@ -445,10 +441,10 @@
           <label for="election" class="header-option">Choose your election option:</label><br>
 
           <input type="radio" id="cash" name="election" value="cash" checked onclick="handleElectionChange('cash')">
-          <label for="cash" id="label-cash">Cash: HKD 0.1/stock (Default)</label><br>
+          <label for="cash" id="label-cash">Full Cash: HKD 0.1/stock (Default)</label><br>
 
           <input type="radio" id="stock" name="election" value="stock" onclick="handleElectionChange('stock')">
-          <label for="stock" id="label-stock">Stock: 0.0138/stock</label><br>
+          <label for="stock" id="label-stock">Full Stock: 0.0138/stock</label><br>
 
           <input type="radio" id="both" name="election" value="both" onclick="handleElectionChange('both')">
           <label for="both" id="label-both">Cash + Stock (Specify proportions below)</label>
@@ -466,20 +462,22 @@
             </span>
             <small></small>
           </div>
-          <table >
+          <table>
             <thead>
               <tr>
                 <th>Position</th>
-                <th>Unallocated</th>
+                <th>Cash Selection</th>
+                <th>Stock Selection</th>
                 <th>HKD</th>
                 <th>Stock</th>
               </tr>
             </thead>
-            <tbody >
+            <tbody>
               <tr id="calculated-table">
-                <td>7,055,000</td>
-                <td>7,055,000</td>
+                <td>10,000</td>
+                <td>10,000</td>
                 <td>0</td>
+                <td>1,000</td>
                 <td>0</td>
               </tr>
             </tbody>
