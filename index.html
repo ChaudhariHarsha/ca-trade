@@ -230,106 +230,73 @@
 
   <!-- Existing JavaScript remains unchanged -->
   <script>
-    function handleElectionChange(value) {
-      const cashPercent = document.getElementById("cash-percent");
-      const stockPercent = document.getElementById("stock-percent");
+  function formatNumber(number) {
+    return Number(number).toLocaleString("en-US");
+  }
 
-      if (value === "both") {
-        cashPercent.style.display = "block";
-        stockPercent.style.display = "block";
+  function recalculateElectionRows() {
+    const rows = document.querySelectorAll('.give-election tbody tr');
+    let totalPosition = 0;
+    let totalHKD = 0;
+    let totalStock = 0;
+
+    rows.forEach((row, index) => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 6) return; // skip total row
+
+      const position = parseInt(cells[1].textContent.replace(/,/g, ''), 10) || 0;
+      const hkdInput = cells[2].querySelector('input');
+      const stockInput = cells[3].querySelector('input');
+      const submitBtn = cells[5].querySelector('button');
+
+      const hkdVal = parseInt(hkdInput.value || 0, 10);
+      const stockVal = parseInt(stockInput.value || 0, 10);
+      const sum = hkdVal + stockVal;
+
+      if (sum === position) {
+        submitBtn.disabled = false;
+        submitBtn.style.backgroundColor = "#005baa";
+        submitBtn.style.cursor = "pointer";
       } else {
-        cashPercent.style.display = "none";
-        stockPercent.style.display = "none";
-      }
-      for (const item of ['label-stock', 'label-cash', 'label-both']) {
-        const lableSection = document.getElementById(item);
-        if ('label-' + value === item) {
-          lableSection.style.fontWeight = "600"
-        } else {
-          lableSection.style.fontWeight = "400"
-        }
-      }
-      const cashPercentInput = document.querySelector("#cash-percent input");
-      const stockPercentInput = document.querySelector("#stock-percent input");
-      if (cashPercentInput) cashPercentInput.value = '';
-      if (stockPercentInput) stockPercentInput.value = '';
-    }
-
-    const totalShares = 46133000;
-    const cashRate = 0.1;
-    const stockRate = 0.0138;
-
-    function calculateElectionValues(event) {
-      const election = document.querySelector('input[name="election"]:checked').value;
-      const cashInput = document.querySelector('input[name="cashPercent"]');
-      const stockInput = document.querySelector('input[name="stockPercent"]');
-
-      let cashPercent = 0;
-      let stockPercent = 0;
-
-      if (election === 'cash') {
-        cashPercent = 100;
-        stockPercent = 0;
-        cashInput.value = '';
-        stockInput.value = '';
-      } else if (election === 'stock') {
-        cashPercent = 0;
-        stockPercent = 100;
-        cashInput.value = '';
-        stockInput.value = '';
-      } else if (election === 'both') {
-        cashPercent = parseFloat(cashInput.value) || 0;
-        stockPercent = parseFloat(stockInput.value) || 0;
-
-        if (cashInput.value && !stockInput.value) {
-          stockPercent = 46133000 - cashPercent;
-          stockInput.value = stockPercent >= 0 ? stockPercent : 0;
-        } else if (!cashInput.value && stockInput.value) {
-          cashPercent = 46133000 - stockPercent;
-          cashInput.value = cashPercent >= 0 ? cashPercent : 0;
-        } else if (cashInput.value && cashInput.value) {
-          if (event === 'cash') {
-            stockPercent = 46133000 - cashPercent;
-            stockInput.value = stockPercent >= 0 ? stockPercent : 0;
-          } else {
-            cashPercent = 46133000 - stockPercent;
-            cashInput.value = cashPercent >= 0 ? cashPercent : 0;
-          }
-        }
+        submitBtn.disabled = true;
+        submitBtn.style.backgroundColor = "#ccc";
+        submitBtn.style.cursor = "not-allowed";
       }
 
-      let cashShares = (totalShares * cashPercent) / 100;
-      let stockShares = (totalShares * stockPercent) / 100;
-      if (election === 'both') {
-        cashShares = cashPercent
-        stockShares = stockPercent
-      }
-      const hkdAmount = cashShares * cashRate;
-      const stockAmount = stockShares * stockRate;
+      totalPosition += position;
+      totalHKD += hkdVal;
+      totalStock += stockVal;
+    });
 
-      const tableRow = document.getElementById("calculated-table");
-      tableRow.children[1].textContent = Math.round(cashShares).toLocaleString();
-      tableRow.children[2].textContent = Math.round(stockShares).toLocaleString();
-      tableRow.children[3].textContent = Math.round(hkdAmount).toLocaleString();
-      tableRow.children[4].textContent = Math.round(stockAmount).toLocaleString();
-    }
+    // Update totals row
+    const totalRow = document.querySelector('.give-election tbody tr:last-child');
+    const totalCells = totalRow.querySelectorAll('td');
+    totalCells[1].textContent = formatNumber(totalPosition);
+    totalCells[2].textContent = formatNumber(totalHKD);
+    totalCells[3].textContent = formatNumber(totalStock);
+  }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('input[name="cashPercent"]').addEventListener('input', (() => {
-        calculateElectionValues('cash')
-      }));
-      document.querySelector('input[name="stockPercent"]').addEventListener('input', (() => {
-        calculateElectionValues('cash')
-      }));
+  // Attach listeners
+  window.addEventListener('DOMContentLoaded', () => {
+    const giveElectionRows = document.querySelectorAll('.give-election tbody tr');
 
-      const radios = document.querySelectorAll('input[name="election"]');
-      radios.forEach(radio => {
-        radio.addEventListener('change', () => {
-          calculateElectionValues(); // recalculate
-        });
+    giveElectionRows.forEach((row, index) => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 6) return; // Skip total row
+
+      const hkdInput = cells[2].querySelector('input');
+      const stockInput = cells[3].querySelector('input');
+
+      [hkdInput, stockInput].forEach(input => {
+        input.addEventListener('input', recalculateElectionRows);
       });
     });
-  </script>
+
+    // Initial call
+    recalculateElectionRows();
+  });
+</script>
+
 </head>
 
 <body>
