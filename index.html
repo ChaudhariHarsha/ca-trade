@@ -5,6 +5,10 @@
   <meta charset="UTF-8">
   <title>Corporate Action Election Submission</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background-color: #f9f9f9;
@@ -13,20 +17,41 @@
       line-height: 1.6;
     }
 
-    .container {
+    .container,
+    .outer-border,
+    .innner-container {
       background-color: #ffffff;
-      max-width: 95%;
-      margin: auto;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
     }
 
-    h2 {
-      color: #005baa;
+    .outer-border{
+      padding-top: 1px;
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-bottom: 24px;
+
     }
 
+    h2 {
+      margin: 0px;
+      padding: 16px 12px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #ccc;
+      color: #000000;
+      display: flex;
+      position: fixed;
+      width: 100%;
+      z-index: 2;
+    }
 
+    h3 {
+      border-bottom: 1px solid #ccc;
+    }
 
     p {
       font-size: 13px;
@@ -101,10 +126,12 @@
     .proportion-inputs {
       padding-top: 8px;
       padding-left: 8px;
+    }
 
-      .option-grid {
-        display: flex;
-      }
+    .option-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     #stock-percent,
@@ -124,7 +151,6 @@
     .submit-button {
       padding: 6px 10px;
       border: 1px solid #e0e0e0;
-      text-align: left;
       background-color: #005baa;
       color: #ffffff;
       font-weight: 600;
@@ -139,70 +165,63 @@
       cursor: pointer;
     }
 
-
     textarea {
-      padding-top: 4px;
-      padding-left: 4px;
+      padding: 6px;
       margin-top: 6px;
       margin-left: 8px;
       font-family: 'Segoe UI', Arial, sans-serif;
       border-radius: 5px;
+      width: calc(100% - 16px);
     }
 
-
-
-    .outer-border {
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      padding: 15px 20px;
-      width: 95%;
-      background-color: #fff;
-      padding-top: 0px;
-    }
-
-    .main-container {
-      display: flex;
-      gap: 8px;
-      padding: 20px;
-      flex-direction: column;
-
-      .action-container {
-        display: flex;
-        gap: 8px;
-      }
-    }
-
+    .main-container,
     .recieved-elections {
-      padding: 20px;
-      padding-top: 84px;
-      padding-bottom: 0px;
-
-      .innner-container {
-        width: 96.5%;
-      }
-    }
-
-    h3 {
-      border-bottom: 1px solid #ccc;
-    }
-
-    h2 {
-      margin: 0px;
-      padding: 16px 12px;
-      background-color: #ffffff;
-      border-bottom: 1px solid #ccc;
-      color: #000000;
-      display: flex;
-      position: fixed;
+      padding: 20px 12px;
+      overflow-x: auto;
       width: 100%;
-      z-index: 2;
+      
+    }
+
+    .recieved-elections{
+      padding-top: 90px;
+    }
+
+    .action-container {
+      display: flex;
+      gap: 2%;
+      flex-wrap: wrap;
+    }
+
+    .details-table,
+    form {
+      width: 48%;
+      min-width: 300px;
+      padding-top: 12px;
     }
 
     .submit {
       display: flex;
-      justify-content: end;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 768px) {
+      .action-container {
+        flex-direction: column;
+      }
+
+      .details-table,
+      form {
+        width: 100% !important;
+      }
+
+      textarea {
+        width: 100%;
+        margin-left: 0;
+      }
     }
   </style>
+
+  <!-- Existing JavaScript remains unchanged -->
   <script>
     function handleElectionChange(value) {
       const cashPercent = document.getElementById("cash-percent");
@@ -229,7 +248,7 @@
       if (stockPercentInput) stockPercentInput.value = '';
     }
 
-    const totalShares = 10000;
+    const totalShares = 46133000;
     const cashRate = 0.1;
     const stockRate = 0.0138;
 
@@ -255,19 +274,18 @@
         cashPercent = parseFloat(cashInput.value) || 0;
         stockPercent = parseFloat(stockInput.value) || 0;
 
-        // If only one is filled, auto-calculate the other
         if (cashInput.value && !stockInput.value) {
-          stockPercent = 10000 - cashPercent;
+          stockPercent = 46133000 - cashPercent;
           stockInput.value = stockPercent >= 0 ? stockPercent : 0;
         } else if (!cashInput.value && stockInput.value) {
-          cashPercent = 10000 - stockPercent;
+          cashPercent = 46133000 - stockPercent;
           cashInput.value = cashPercent >= 0 ? cashPercent : 0;
         } else if (cashInput.value && cashInput.value) {
           if (event === 'cash') {
-            stockPercent = 10000 - cashPercent;
+            stockPercent = 46133000 - cashPercent;
             stockInput.value = stockPercent >= 0 ? stockPercent : 0;
           } else {
-            cashPercent = 10000 - stockPercent;
+            cashPercent = 46133000 - stockPercent;
             cashInput.value = cashPercent >= 0 ? cashPercent : 0;
           }
         }
@@ -282,14 +300,12 @@
       const hkdAmount = cashShares * cashRate;
       const stockAmount = stockShares * stockRate;
 
-      // Update result table: [0]=Position, [1]=Cash Sel, [2]=Stock Sel, [3]=HKD, [4]=Stock
       const tableRow = document.getElementById("calculated-table");
-      tableRow.children[1].textContent = Math.round(cashShares).toLocaleString();   // Cash Selection
-      tableRow.children[2].textContent = Math.round(stockShares).toLocaleString();  // Stock Selection
-      tableRow.children[3].textContent = Math.round(hkdAmount).toLocaleString();    // HKD Value
-      tableRow.children[4].textContent = Math.round(stockAmount).toLocaleString();  // Stock Value
+      tableRow.children[1].textContent = Math.round(cashShares).toLocaleString();
+      tableRow.children[2].textContent = Math.round(stockShares).toLocaleString();
+      tableRow.children[3].textContent = Math.round(hkdAmount).toLocaleString();
+      tableRow.children[4].textContent = Math.round(stockAmount).toLocaleString();
     }
-
 
     window.addEventListener('DOMContentLoaded', () => {
       document.querySelector('input[name="cashPercent"]').addEventListener('input', (() => {
@@ -312,7 +328,7 @@
 <body>
 
   <h2>Corporate Action Election Submission</h2>
-  <div class=" recieved-elections">
+  <div class="recieved-elections">
     <div class="outer-border innner-container">
       <h3>Received Election</h3>
       <table>
@@ -413,11 +429,10 @@
     </div>
   </div>
   <div class="main-container">
-
-    <div class="action-container">
       <div class="outer-border">
-        <h3>Dividend Option</h3>
-        <table>
+        <h3>Give Election</h3>
+        <div class="action-container">
+          <table class="details-table">
           <tr>
             <th>Security</th>
             <td>XINYI GLASS HOLDINGS LTD</td>
@@ -443,43 +458,36 @@
             <td>2025-07-30</td>
           </tr>
           <tr>
-            <th>Custody Deadline</th>
+            <th>Election Deadline</th>
             <td>2025-07-15 4:00 PM Hong Kong Time</td>
           </tr>
           <tr>
             <th>Reinv Price</th>
             <td>HKD 7.35</td>
           </tr>
-          <tr>
-            <th>Market Price</th>
-            <td>HKD 7</td>
-          </tr>
         </table>
-      </div>
-      <div class="outer-border">
-        <h3>Election Options</h3>
-        <form action="/submit-election" method="post">
+         <form action="/submit-election" method="post">
 
           <label for="election" class="header-option">Choose your election option:</label><br>
 
           <input type="radio" id="cash" name="election" value="cash" checked onclick="handleElectionChange('cash')">
-          <label for="cash" id="label-cash">Full Cash: HKD 0.1/stock (Default)</label><br>
+          <label for="cash" id="label-cash">Full HKD: 0.1/stock (Default)</label><br>
 
           <input type="radio" id="stock" name="election" value="stock" onclick="handleElectionChange('stock')">
           <label for="stock" id="label-stock">Full Stock: 0.0138/stock</label><br>
 
           <input type="radio" id="both" name="election" value="both" onclick="handleElectionChange('both')">
-          <label for="both" id="label-both">Cash + Stock (Specify proportions below)</label>
+          <label for="both" id="label-both">Elect Mixed Option</label>
 
           <div id="proportion-inputs" class="proportion-inputs">
             <span class="option-grid">
               <span id="cash-percent">
                 <label for="cashPercent" class="header-percent">Cash:</label>
-                <input type="number" name="cashPercent" min="0" max="10000" step="1"> &nbsp;
+                <input type="number" name="cashPercent" min="0" max="46133000" step="1"> &nbsp;
               </span>
               <span id="stock-percent">
                 <label for="stockPercent" class="header-percent">Stock:</label>
-                <input type="number" name="stockPercent" min="0" max="10000" step="1"><br>
+                <input type="number" name="stockPercent" min="0" max="46133000" step="1"><br>
               </span>
             </span>
             <small></small>
@@ -496,10 +504,10 @@
             </thead>
             <tbody>
               <tr id="calculated-table">
-                <td>10,000</td>
-                <td>10,000</td>
+                <td>46,133,000</td>
+                <td>46,133,000</td>
                 <td>0</td>
-                <td>1,000</td>
+                <td>46,133,00</td>
                 <td>0</td>
               </tr>
             </tbody>
@@ -514,8 +522,8 @@
             <button type="submit" class="submit-button">Submit Election</button>
           </div>
         </form>
+        </div>
       </div>
-    </div>
   </div>
 
 </body>
