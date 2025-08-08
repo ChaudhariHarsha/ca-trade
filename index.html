@@ -29,6 +29,7 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
     }
 
+
     .outer-border {
       padding-top: 1px;
       padding-left: 24px;
@@ -183,7 +184,7 @@
     }
 
     .recieved-elections {
-      padding-top: 90px;
+      width: 70%;
     }
 
     .action-container {
@@ -203,12 +204,17 @@
       justify-content: flex-end;
     }
 
-    .give-election input[type="number"]:focus,
-    .give-election input,
-    .give-election input[type="text"]:focus {
+    .innner-container input[type="number"]:focus,
+    .innner-container input,
+    .innner-container input[type="text"]:focus {
       outline: none;
       box-shadow: none;
       border: none;
+    }
+
+    .base-container {
+      display: flex;
+      padding-top: 70px;
     }
 
     @media (max-width: 768px) {
@@ -229,38 +235,35 @@
   </style>
 
   <!-- Existing JavaScript remains unchanged -->
-  <script>
+<script>
   function formatNumber(number) {
     return Number(number).toLocaleString("en-US");
   }
 
   function recalculateElectionRows() {
-    const rows = document.querySelectorAll('.give-election tbody tr');
+    const table = document.querySelector('.give-election-table');
+    const rows = table.querySelectorAll('tbody tr');
     let totalPosition = 0;
     let totalHKD = 0;
     let totalStock = 0;
+    let allValid = true;
 
     rows.forEach((row, index) => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length < 6) return; // skip total row
+      // Skip total row
+      const isTotalRow = row.style.fontWeight === "bold";
+      if (isTotalRow) return;
 
-      const position = parseInt(cells[1].textContent.replace(/,/g, ''), 10) || 0;
-      const hkdInput = cells[2].querySelector('input');
-      const stockInput = cells[3].querySelector('input');
-      const submitBtn = cells[5].querySelector('button');
+      const positionCell = row.cells[1];
+      const hkdInput = row.cells[2].querySelector('input');
+      const stockInput = row.cells[3].querySelector('input');
 
+      const position = parseInt(positionCell.textContent.replace(/,/g, ''), 10) || 0;
       const hkdVal = parseInt(hkdInput.value || 0, 10);
       const stockVal = parseInt(stockInput.value || 0, 10);
-      const sum = hkdVal + stockVal;
 
-      if (sum === position) {
-        submitBtn.disabled = false;
-        submitBtn.style.backgroundColor = "#005baa";
-        submitBtn.style.cursor = "pointer";
-      } else {
-        submitBtn.disabled = true;
-        submitBtn.style.backgroundColor = "#ccc";
-        submitBtn.style.cursor = "not-allowed";
+      const sum = hkdVal + stockVal;
+      if (sum !== position) {
+        allValid = false;
       }
 
       totalPosition += position;
@@ -268,234 +271,232 @@
       totalStock += stockVal;
     });
 
-    // Update totals row
-    const totalRow = document.querySelector('.give-election tbody tr:last-child');
-    const totalCells = totalRow.querySelectorAll('td');
-    totalCells[1].textContent = formatNumber(totalPosition);
-    totalCells[2].textContent = formatNumber(totalHKD);
-    totalCells[3].textContent = formatNumber(totalStock);
+    // Update total row values (last row)
+    const totalRow = table.querySelector('tbody tr:last-child');
+    totalRow.cells[1].textContent = formatNumber(totalPosition);
+    totalRow.cells[2].textContent = formatNumber(totalHKD);
+    totalRow.cells[3].textContent = formatNumber(totalStock);
+
+    // Enable or disable submit button
+    const submitBtn = document.querySelector('.submit-button');
+    if (allValid) {
+      submitBtn.disabled = false;
+      submitBtn.style.backgroundColor = "#005baa";
+      submitBtn.style.cursor = "pointer";
+    } else {
+      submitBtn.disabled = true;
+      submitBtn.style.backgroundColor = "#ccc";
+      submitBtn.style.cursor = "not-allowed";
+    }
   }
 
-  // Attach listeners
   window.addEventListener('DOMContentLoaded', () => {
-    const giveElectionRows = document.querySelectorAll('.give-election tbody tr');
-
-    giveElectionRows.forEach((row, index) => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length < 6) return; // Skip total row
-
-      const hkdInput = cells[2].querySelector('input');
-      const stockInput = cells[3].querySelector('input');
-
-      [hkdInput, stockInput].forEach(input => {
-        input.addEventListener('input', recalculateElectionRows);
-      });
+    const inputs = document.querySelectorAll('.give-election-table input[type="number"]');
+    inputs.forEach(input => {
+      input.addEventListener('input', recalculateElectionRows);
     });
 
-    // Initial call
-    recalculateElectionRows();
+    recalculateElectionRows(); // Initial call on load
   });
 </script>
+
+
+
+
+
 
 </head>
 
 <body>
 
   <h2>Corporate Action Election Submission</h2>
-  <div class="recieved-elections">
-    <div class="outer-border">
-      <h3 style="margin-bottom: 0px;">Event Details</h3>
-      <div class="action-container">
-        <table width="100%" cellpadding="6" cellspacing="0" border="1" style="
-                    border-collapse: collapse;
-                    font-size: 13px;
-                    border-color: #e0e0e0;
-                    ">
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Company</strong></td>
-            <td>XINYI GLASS HOLDINGS LTD</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>RIC Code</strong></td>
-            <td>SSE.L</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>ISIN Code</strong></td>
-            <td>KYG9828G1082</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Event Type</strong></td>
-            <td>Dividend Option</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Ex Date</strong></td>
-            <td>2025-08-03</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Record Date</strong></td>
-            <td>2025-08-04</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Pay Date</strong></td>
-            <td>2025-07-30</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Election Deadline</strong></td>
-            <td>2025-07-15 4:00 PM Hong Kong Time</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Position Type</strong></td>
-            <td>SBL_Borrow</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%"><strong>Cash Rate</strong></td>
-            <td>HKD 0.1/stock</td>
-          </tr>
-          <tr>
-            <td bgcolor="#f1f4f8" width="40%">
-              <strong>Reinvestment Price</strong>
-            </td>
-            <td>HKD 7.35</td>
-          </tr>
-        </table>
+  <div class="base-container">
+    <div class="recieved-elections">
+      <div class="outer-border" style="height: 100%;">
+        <h3 style="margin-bottom: 0px;">Event Details</h3>
+        <div class="action-container">
+          <table width="100%" cellpadding="6" cellspacing="0" border="1" style="
+                      border-collapse: collapse;
+                      font-size: 13px;
+                      border-color: #e0e0e0;
+                      ">
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Company</strong></td>
+              <td>XINYI GLASS HOLDINGS LTD</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>RIC Code</strong></td>
+              <td>SSE.L</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>ISIN Code</strong></td>
+              <td>KYG9828G1082</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Event Type</strong></td>
+              <td>Dividend Option</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Ex Date</strong></td>
+              <td>2025-08-03</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Record Date</strong></td>
+              <td>2025-08-04</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Pay Date</strong></td>
+              <td>2025-07-30</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Election Deadline</strong></td>
+              <td>2025-07-15 4:00 PM Hong Kong Time</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Position Type</strong></td>
+              <td>SBL_Borrow</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Cash Rate</strong></td>
+              <td>HKD 0.1/stock</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%"><strong>Stock Rate</strong></td>
+              <td>0.01/stock</td>
+            </tr>
+            <tr>
+              <td bgcolor="#f1f4f8" width="40%">
+                <strong>Reinvestment Price</strong>
+              </td>
+              <td>HKD 7.35</td>
+            </tr>
+          </table>
 
 
 
+        </div>
+        <div style="margin-top: 20px;">
+          <label for="additional-comment" style="font-weight: bold; font-size: 14px;">Additional Comment</label>
+          <textarea id="additional-comment" name="additional-comment" rows="4"
+            placeholder="Enter any additional comments here..."></textarea>
+        </div>
       </div>
+
     </div>
-  </div>
-  <!-- ... head section remains unchanged ... -->
+    <!-- ... head section remains unchanged ... -->
 
-  <!-- Replace the existing "Received Election" table with the updated version below -->
-  <div class="main-container">
-    <div class="outer-border innner-container">
-      <h3>Received Election</h3>
-      <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th style="width: 16.66%; text-align: left;">Grouping Key</th>
-            <th style="width: 16.66%; text-align: left;">Type</th>
-            <th style="width: 16.66%; text-align: left;">Client Name</th>
-            <th style="width: 16.66%; text-align: left;">Position</th>
-            <th style="width: 16.66%; text-align: left;">HKD</th>
-            <th style="width: 16.66%; text-align: left;">Stock</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>3035370002*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Mandar K</td>
-            <td>6,500,000</td>
-            <td>6,500,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Anshu J</td>
-            <td>26,000,000</td>
-            <td>26,000,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Sakthivel C</td>
-            <td>7,700,000</td>
-            <td>7,700,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Harshal C</td>
-            <td>300,000</td>
-            <td>300,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Abhishek R</td>
-            <td>6,500,000</td>
-            <td>6,500,000</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>3035370003*BNPHK</td>
-            <td>SBL_Borrow</td>
-            <td>Mukesh Y</td>
-            <td>900,000</td>
-            <td>900,000</td>
-            <td>0</td>
-          </tr>
-          <!-- Total Row -->
-          <tr style="font-weight: bold; background-color: #f9f9f9;">
-            <td colspan="3"></td>
-            <td>47,900,000</td>
-            <td>47,900,000</td>
-            <td>0</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-
-  <div class="main-container">
-    <div class="outer-border give-election">
-      <h3 style="margin-bottom: 0px;">Give Election</h3>
-      <div class="action-container">
-        <table>
+    <!-- Replace the existing "Received Election" table with the updated version below -->
+    <div class="main-container">
+      <div class="outer-border innner-container" style="height: 100%;">
+        <h3>Received Election</h3>
+        <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
           <thead>
             <tr>
-              <th>Client Name</th>
-              <th>Position</th>
-              <th>HKD</th>
-              <th>Stock</th>
-              <th>Additional Comment</th>
-              <th>Action</th>
+              <th style="width: 19.66%; text-align: left;">Grouping Key</th>
+              <th style="width: 16.66%; text-align: left;">Type</th>
+              <th style="width: 16.66%; text-align: left;">Client Name</th>
+              <th style="width: 16.66%; text-align: left;">Position</th>
+              <th style="width: 16.66%; text-align: left;">HKD</th>
+              <th style="width: 13.66%; text-align: left;">Stock</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Client A</td>
-              <td>20,900,000</td>
-              <td><input type="number" value="20900000" /></td>
-              <td><input type="number" value="0" /></td>
-              <td><input type="text" /></td>
-              <td>
-                <div class="submit">
-                  <button type="submit" class="submit-button">Submit</button>
-                </div>
-              </td>
+              <td>3035370002*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Mandar K</td>
+              <td>6,500,000</td>
+              <td>6,500,000</td>
+              <td>0</td>
             </tr>
             <tr>
-              <td>Client B</td>
-              <td>27,000,000</td>
-              <td><input type="number" value="27000000" /></td>
-              <td><input type="number" value="0" /></td>
-              <td><input type="text" /></td>
-              <td>
-                <div class="submit">
-                  <button type="submit" class="submit-button">Submit</button>
-                </div>
-              </td>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Anshu J</td>
+              <td>26,000,000</td>
+              <td>26,000,000</td>
+              <td>0</td>
             </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Sakthivel C</td>
+              <td>7,700,000</td>
+              <td>7,700,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Harshal C</td>
+              <td>300,000</td>
+              <td>300,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Abhishek R</td>
+              <td>6,500,000</td>
+              <td>6,500,000</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>3035370003*BNPHK</td>
+              <td>SBL_Borrow</td>
+              <td>Mukesh Y</td>
+              <td>900,000</td>
+              <td>900,000</td>
+              <td>0</td>
+            </tr>
+            <!-- Total Row -->
             <tr style="font-weight: bold; background-color: #f9f9f9;">
-            <td colspan="1"></td>
-            <td>47,900,000</td>
-            <td>47,900,000</td>
-            <td>0</td>
-            <td colspan="2"></td>
-          </tr>
+              <td colspan="3"></td>
+              <td>47,900,000</td>
+              <td>47,900,000</td>
+              <td>0</td>
+            </tr>
           </tbody>
         </table>
-
-
+        <h3 style="margin-bottom: 0px; ">Give Election</h3>
+        <div class="action-container">
+          <table class="give-election-table">
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Position</th>
+                <th>HKD</th>
+                <th>Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Client A</td>
+                <td>20,900,000</td>
+                <td><input type="number" value="20900000" /></td>
+                <td><input type="number" value="0" /></td>
+              </tr>
+              <tr>
+                <td>Client B</td>
+                <td>27,000,000</td>
+                <td><input type="number" value="27000000" /></td>
+                <td><input type="number" value="0" /></td>
+              </tr>
+              <tr style="font-weight: bold; background-color: #f9f9f9;">
+                <td colspan="1"></td>
+                <td>47,900,000</td>
+                <td>47,900,000</td>
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="submit" style="margin-top: 20px;display: flex; justify-content: flex-end; width:100%">
+            <button type="submit" class="submit-button">Submit Election</button>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 
 </body>
