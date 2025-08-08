@@ -249,13 +249,12 @@
     let allValid = true;
 
     rows.forEach((row, index) => {
-      // Skip total row
       const isTotalRow = row.style.fontWeight === "bold";
       if (isTotalRow) return;
 
-      const positionCell = row.cells[1];
-      const hkdInput = row.cells[2].querySelector('input');
-      const stockInput = row.cells[3].querySelector('input');
+      const positionCell = row.cells[2];
+      const hkdInput = row.cells[3].querySelector('input');
+      const stockInput = row.cells[4].querySelector('input');
 
       const position = parseInt(positionCell.textContent.replace(/,/g, ''), 10) || 0;
       const hkdVal = parseInt(hkdInput.value || 0, 10);
@@ -271,7 +270,7 @@
       totalStock += stockVal;
     });
 
-    // Update total row values (last row)
+    // Update total row
     const totalRow = table.querySelector('tbody tr:last-child');
     totalRow.cells[1].textContent = formatNumber(totalPosition);
     totalRow.cells[2].textContent = formatNumber(totalHKD);
@@ -296,15 +295,9 @@
       input.addEventListener('input', recalculateElectionRows);
     });
 
-    recalculateElectionRows(); // Initial call on load
+    recalculateElectionRows(); // Initial check on page load
   });
 </script>
-
-
-
-
-
-
 </head>
 
 <body>
@@ -392,17 +385,21 @@
         <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
           <thead>
             <tr>
-              <th style="width: 19.66%; text-align: left;">Grouping Key</th>
-              <th style="width: 16.66%; text-align: left;">Type</th>
+                <th colspan="4" style="width: 70%;text-align: center;">Client Position</th>
+                <th colspan="2" style="width: 30%;text-align: center;">Election</th>
+              </tr>
+            <tr>
+              <th style="width: 20.66%; text-align: left;">Grouping Key</th>
+              <th style="width: 16.66%; text-align: left;">Desk</th>
               <th style="width: 16.66%; text-align: left;">Client Name</th>
               <th style="width: 16.66%; text-align: left;">Position</th>
-              <th style="width: 16.66%; text-align: left;">HKD</th>
+              <th style="width: 15.66%; text-align: left;">HKD</th>
               <th style="width: 13.66%; text-align: left;">Stock</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>3035370002*BNPHK</td>
+              <td>3035370002*BNP</td>
               <td>SBL_Borrow</td>
               <td>Mandar K</td>
               <td>6,500,000</td>
@@ -410,7 +407,7 @@
               <td>0</td>
             </tr>
             <tr>
-              <td>3035370003*BNPHK</td>
+              <td>3035370003*BNP</td>
               <td>SBL_Borrow</td>
               <td>Anshu J</td>
               <td>26,000,000</td>
@@ -418,7 +415,7 @@
               <td>0</td>
             </tr>
             <tr>
-              <td>3035370003*BNPHK</td>
+              <td>3035370003*BNP</td>
               <td>SBL_Borrow</td>
               <td>Sakthivel C</td>
               <td>7,700,000</td>
@@ -426,7 +423,7 @@
               <td>0</td>
             </tr>
             <tr>
-              <td>3035370003*BNPHK</td>
+              <td>3035370003*BNP</td>
               <td>SBL_Borrow</td>
               <td>Harshal C</td>
               <td>300,000</td>
@@ -434,7 +431,7 @@
               <td>0</td>
             </tr>
             <tr>
-              <td>3035370003*BNPHK</td>
+              <td>3035370003*BNP</td>
               <td>SBL_Borrow</td>
               <td>Abhishek R</td>
               <td>6,500,000</td>
@@ -442,7 +439,7 @@
               <td>0</td>
             </tr>
             <tr>
-              <td>3035370003*BNPHK</td>
+              <td>3035370003*BNP</td>
               <td>SBL_Borrow</td>
               <td>Mukesh Y</td>
               <td>900,000</td>
@@ -463,6 +460,11 @@
           <table class="give-election-table">
             <thead>
               <tr>
+                <th colspan="3" style="text-align: center;">Client Position</th>
+                <th colspan="2" style="text-align: center;">Election</th>
+              </tr>
+              <tr>
+                <th>Desk</th>
                 <th>Client Name</th>
                 <th>Position</th>
                 <th>HKD</th>
@@ -471,19 +473,21 @@
             </thead>
             <tbody>
               <tr>
+                <td>sbl</td>
                 <td>Client A</td>
                 <td>20,900,000</td>
                 <td><input type="number" value="20900000" /></td>
                 <td><input type="number" value="0" /></td>
               </tr>
               <tr>
+                <td>sbl</td>
                 <td>Client B</td>
                 <td>27,000,000</td>
                 <td><input type="number" value="27000000" /></td>
                 <td><input type="number" value="0" /></td>
               </tr>
               <tr style="font-weight: bold; background-color: #f9f9f9;">
-                <td colspan="1"></td>
+                <td colspan="2"></td>
                 <td>47,900,000</td>
                 <td>47,900,000</td>
                 <td>0</td>
